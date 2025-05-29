@@ -46,7 +46,7 @@ exports.create = async (req, res) => {
     const db = require('../models');
     const { name, description, price, stock, images, shippingInfo, category } = req.body;
     if (!name || !description || !price || !stock) return res.status(400).json({ error: 'Campos obligatorios faltantes' });
-    const [result] = await db.sequelize.query(
+    const result = await db.sequelize.query(
       'INSERT INTO "Products" ("name", "description", "price", "stock", "images", "shippingInfo", "category", "createdAt", "updatedAt") VALUES (:name, :description, :price, :stock, :images, :shippingInfo, :category, NOW(), NOW()) RETURNING *',
       {
         replacements: { name, description, price, stock, images: JSON.stringify(images), shippingInfo, category },
@@ -68,7 +68,7 @@ exports.update = async (req, res) => {
   try {
     const db = require('../models');
     const { name, description, price, stock, images, shippingInfo, category } = req.body;
-    const [rows] = await db.sequelize.query('SELECT * FROM "Products" WHERE "id" = :id', {
+    const rows = await db.sequelize.query('SELECT * FROM "Products" WHERE "id" = :id', {
       replacements: { id: req.params.id },
       type: db.Sequelize.QueryTypes.SELECT
     });
@@ -82,7 +82,7 @@ exports.update = async (req, res) => {
       }
     );
     // Devuelve el producto actualizado
-    const [updatedRows] = await db.sequelize.query('SELECT * FROM "Products" WHERE "id" = :id', {
+    const updatedRows = await db.sequelize.query('SELECT * FROM "Products" WHERE "id" = :id', {
       replacements: { id: req.params.id },
       type: db.Sequelize.QueryTypes.SELECT
     });
@@ -99,7 +99,7 @@ exports.update = async (req, res) => {
 exports.remove = async (req, res) => {
   try {
     const db = require('../models');
-    const [rows] = await db.sequelize.query('SELECT * FROM "Products" WHERE "id" = :id', {
+    const rows = await db.sequelize.query('SELECT * FROM "Products" WHERE "id" = :id', {
       replacements: { id: req.params.id },
       type: db.Sequelize.QueryTypes.SELECT
     });
