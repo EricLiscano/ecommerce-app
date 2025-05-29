@@ -1,0 +1,15 @@
+:root {
+  --color-primary: #2563eb;
+  --color-primary-dark: #1e40af;
+  --color-accent: #ff6b6b;
+  --color-bg: #f5f7fa;
+  --color-bg-card: #fff;
+  --color-border: #e0e3eb;
+  --color-text: #222;
+  --color-success: #38d996;
+  --color-danger: #ff4d4f;
+  --radius: 8px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.06);
+  --font-family: 'Inter', 'Roboto', Arial, sans-serif;
+  --transition: all 0.2s cubic-bezier(.4,0,.2,1);
+}
