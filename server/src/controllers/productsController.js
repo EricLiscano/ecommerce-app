@@ -68,21 +68,21 @@ exports.update = async (req, res) => {
   try {
     const db = require('../models');
     const { name, description, price, stock, images, shippingInfo, category } = req.body;
-    const rows = await db.sequelize.query('SELECT * FROM "Products" WHERE "id" = :id', {
+    const rows = await db.sequelize.query('SELECT * FROM "Books" WHERE "id" = :id', {
       replacements: { id: req.params.id },
       type: db.Sequelize.QueryTypes.SELECT
     });
     const producto = rows && rows[0];
     if (!producto) return res.status(404).json({ error: 'Producto no encontrado' });
     await db.sequelize.query(
-      'UPDATE "Products" SET "name" = :name, "description" = :description, "price" = :price, "stock" = :stock, "images" = :images, "shippingInfo" = :shippingInfo, "category" = :category, "updatedAt" = NOW() WHERE "id" = :id',
+      'UPDATE "Books" SET "title" = :title, "author" = :author, "description" = :description, "price" = :price, "stock" = :stock, "coverImage" = :coverImage, "publisher" = :publisher, "edition" = :edition, "condition" = :condition, "isbn" = :isbn, "language" = :language, "genre" = :genre, "year" = :year, "updatedAt" = NOW() WHERE "id" = :id',
       {
         replacements: { id: req.params.id, name, description, price, stock, images: JSON.stringify(images), shippingInfo, category },
         type: db.Sequelize.QueryTypes.UPDATE
       }
     );
     // Devuelve el producto actualizado
-    const updatedRows = await db.sequelize.query('SELECT * FROM "Products" WHERE "id" = :id', {
+    const updatedRows = await db.sequelize.query('SELECT * FROM "Books" WHERE "id" = :id', {
       replacements: { id: req.params.id },
       type: db.Sequelize.QueryTypes.SELECT
     });

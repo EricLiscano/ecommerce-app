@@ -47,8 +47,8 @@ exports.addToCart = async (req, res) => {
   try {
     const db = require('../models');
     const userId = req.user && req.user.id;
-    const { productId, quantity } = req.body;
-    if (!userId || !productId || !quantity || quantity < 1) return res.status(400).json({ error: 'Datos inválidos' });
+    const { bookId, quantity } = req.body;
+    if (!userId || !bookId || !quantity || quantity < 1) return res.status(400).json({ error: 'Datos inválidos' });
     // Buscar o crear carrito
     let cartId;
     const [carts] = await db.sequelize.query(
@@ -65,21 +65,21 @@ exports.addToCart = async (req, res) => {
       cartId = created[0].id || created[0];
     }
     // Verificar producto y stock
-    const [products] = await db.sequelize.query(
-      'SELECT "id", "stock" FROM "Products" WHERE "id" = :productId',
-      { replacements: { productId }, type: db.Sequelize.QueryTypes.SELECT }
+    const [books] = await db.sequelize.query(
+      'SELECT "id", "stock" FROM "Books" WHERE "id" = :bookId',
+      { replacements: { bookId: productId }, type: db.Sequelize.QueryTypes.SELECT }
     );
-    if (!products || !products.id) return res.status(404).json({ error: 'Producto no encontrado' });
-    if (quantity > products.stock) return res.status(400).json({ error: 'No hay suficiente stock' });
+    if (!books || !books.id) return res.status(404).json({ error: 'Libro no encontrado' });
+    if (quantity > books.stock) return res.status(400).json({ error: 'No hay suficiente stock' });
     // Buscar item
     const [items] = await db.sequelize.query(
-      'SELECT "id", "quantity" FROM "CartItems" WHERE "cartId" = :cartId AND "productId" = :productId',
-      { replacements: { cartId, productId }, type: db.Sequelize.QueryTypes.SELECT }
+      'SELECT "id", "quantity" FROM "CartItems" WHERE "cartId" = :cartId AND "bookId" = :bookId',
+      { replacements: { cartId, bookId }, type: db.Sequelize.QueryTypes.SELECT }
     );
     if (items && items.id) {
       // Actualizar cantidad
       const newQty = items.quantity + quantity;
-      if (newQty > products.stock) return res.status(400).json({ error: 'No hay suficiente stock' });
+      if (newQty > books.stock) return res.status(400).json({ error: 'No hay suficiente stock' });
       await db.sequelize.query(
         'UPDATE "CartItems" SET "quantity" = :quantity, "updatedAt" = NOW() WHERE "id" = :id',
         { replacements: { quantity: newQty, id: items.id }, type: db.Sequelize.QueryTypes.UPDATE }
@@ -88,8 +88,8 @@ exports.addToCart = async (req, res) => {
     } else {
       // Crear item
       await db.sequelize.query(
-        'INSERT INTO "CartItems" ("cartId", "productId", "quantity", "createdAt", "updatedAt") VALUES (:cartId, :productId, :quantity, NOW(), NOW())',
-        { replacements: { cartId, productId, quantity }, type: db.Sequelize.QueryTypes.INSERT }
+        'INSERT INTO "CartItems" ("cartId", "bookId", "quantity", "createdAt", "updatedAt") VALUES (:cartId, :bookId, :quantity, NOW(), NOW())',
+        { replacements: { cartId, bookId, quantity }, type: db.Sequelize.QueryTypes.INSERT }
       );
       res.json({ success: true, created: true });
     }
@@ -104,7 +104,7 @@ exports.removeFromCart = async (req, res) => {
   try {
     const db = require('../models');
     const userId = req.user && req.user.id;
-    const { productId } = req.body;
+    const { bookId } = req.body;
     // Buscar carrito
     const [carts] = await db.sequelize.query('SELECT "id" FROM "Carts" WHERE "userId" = :userId LIMIT 1', {
       replacements: { userId },
@@ -113,8 +113,8 @@ exports.removeFromCart = async (req, res) => {
     const cartId = carts && carts.id;
     if (!cartId) return res.status(404).json({ error: 'Carrito no encontrado' });
     // Buscar item
-    const [items] = await db.sequelize.query('SELECT * FROM "CartItems" WHERE "cartId" = :cartId AND "productId" = :productId', {
-      replacements: { cartId, productId },
+    const [items] = await db.sequelize.query('SELECT * FROM "CartItems" WHERE "cartId" = :cartId AND "bookId" = :bookId', {
+      replacements: { cartId, bookId },
       type: db.Sequelize.QueryTypes.SELECT
     });
     const item = items && items[0];
@@ -135,8 +135,8 @@ exports.updateCartItem = async (req, res) => {
   try {
     const db = require('../models');
     const userId = req.user && req.user.id;
-    const { productId, quantity } = req.body;
-    if (!productId || !quantity || quantity < 1) return res.status(400).json({ error: 'Datos inválidos' });
+    const { bookId, quantity } = req.body;
+    if (!bookId || !quantity || quantity < 1) return res.status(400).json({ error: 'Datos inválidos' });
     // Buscar carrito
     const [carts] = await db.sequelize.query('SELECT "id" FROM "Carts" WHERE "userId" = :userId LIMIT 1', {
       replacements: { userId },
@@ -145,16 +145,16 @@ exports.updateCartItem = async (req, res) => {
     const cartId = carts && carts.id;
     if (!cartId) return res.status(404).json({ error: 'Carrito no encontrado' });
     // Verificar producto
-    const [products] = await db.sequelize.query('SELECT * FROM "Products" WHERE "id" = :productId', {
-      replacements: { productId },
+    const [books] = await db.sequelize.query('SELECT * FROM "Books" WHERE "id" = :bookId', {
+      replacements: { bookId },
       type: db.Sequelize.QueryTypes.SELECT
     });
-    const product = products && products[0];
+    const book = books && books[0];
     if (!product) return res.status(404).json({ error: 'Producto no encontrado' });
     if (quantity > product.stock) return res.status(400).json({ error: 'No hay suficiente stock' });
     // Buscar item
-    const [items] = await db.sequelize.query('SELECT * FROM "CartItems" WHERE "cartId" = :cartId AND "productId" = :productId', {
-      replacements: { cartId, productId },
+    const [items] = await db.sequelize.query('SELECT * FROM "CartItems" WHERE "cartId" = :cartId AND "bookId" = :bookId', {
+      replacements: { cartId, bookId },
       type: db.Sequelize.QueryTypes.SELECT
     });
     const item = items && items[0];
