@@ -14,9 +14,9 @@ exports.createOrder = async (req, res) => {
     const cartId = carts && carts.id;
     if (!cartId) return res.status(400).json({ error: 'Carrito vacío' });
     const [items] = await db.sequelize.query(`
-      SELECT ci.*, p."stock", p."name", p."price"
+      SELECT ci.*, b."stock", b."title", b."price"
       FROM "CartItems" ci
-      JOIN "Products" p ON ci."productId" = p."id"
+      JOIN "Books" b ON ci."bookId" = b."id"
       WHERE ci."cartId" = :cartId
     `, {
       replacements: { cartId },
@@ -38,11 +38,11 @@ exports.createOrder = async (req, res) => {
     // Crear order items y descontar stock
     for (const item of items) {
       await db.sequelize.query(
-        'INSERT INTO "OrderItems" ("orderId", "productId", "quantity", "price", "createdAt", "updatedAt") VALUES (:orderId, :productId, :quantity, :price, NOW(), NOW())',
+        'INSERT INTO "OrderItems" ("orderId", "bookId", "quantity", "price", "createdAt", "updatedAt") VALUES (:orderId, :bookId, :quantity, :price, NOW(), NOW())',
         {
           replacements: {
             orderId: order.id,
-            productId: item.productId,
+            bookId: item.bookId,
             quantity: item.quantity,
             price: item.price
           },
@@ -51,9 +51,9 @@ exports.createOrder = async (req, res) => {
       );
       // Descontar stock
       await db.sequelize.query(
-        'UPDATE "Products" SET "stock" = "stock" - :quantity WHERE "id" = :productId',
+        'UPDATE "Books" SET "stock" = "stock" - :quantity WHERE "id" = :bookId',
         {
-          replacements: { quantity: item.quantity, productId: item.productId },
+          replacements: { quantity: item.quantity, bookId: item.bookId },
           type: db.Sequelize.QueryTypes.UPDATE
         }
       );

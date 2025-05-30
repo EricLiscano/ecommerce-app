@@ -21,7 +21,7 @@ db.sequelize = sequelize;
 
 // Importar modelos
 const User = require('../../models/user')(sequelize, Sequelize);
-const Product = require('../../models/product')(sequelize, Sequelize);
+const Book = require('../../models/book')(sequelize, Sequelize);
 const Cart = require('../../models/cart')(sequelize, Sequelize);
 const CartItem = require('../../models/cartitem')(sequelize, Sequelize);
 const Order = require('../../models/order')(sequelize, Sequelize);
@@ -29,7 +29,7 @@ const OrderItem = require('../../models/orderitem')(sequelize, Sequelize);
 const Favorite = require('../../models/favorite')(sequelize, Sequelize);
 
 db.User = User;
-db.Product = Product;
+db.Book = Book;
 db.Cart = Cart;
 db.CartItem = CartItem;
 db.Order = Order;

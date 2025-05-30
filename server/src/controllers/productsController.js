@@ -1,13 +1,13 @@
 // Controlador de productos
 const db = require('../models');
-
+const isDevelopment = process.env.NODE_ENV !== 'production';
 /**
  * Listar todos los productos
  */
 exports.getAll = async (req, res) => {
   try {
     const db = require('../models');
-    const productos = await db.sequelize.query('SELECT * FROM "Products"', {
+    const productos = await db.sequelize.query('SELECT * FROM "Books"', {
       type: db.Sequelize.QueryTypes.SELECT
     });
     // Siempre devolver un array, incluso si hay un solo producto
@@ -25,7 +25,7 @@ exports.getAll = async (req, res) => {
 exports.getById = async (req, res) => {
   try {
     const db = require('../models');
-    const rows = await db.sequelize.query('SELECT * FROM "Products" WHERE "id" = :id', {
+    const rows = await db.sequelize.query('SELECT * FROM "Books" WHERE "id" = :id', {
       replacements: { id: req.params.id },
       type: db.Sequelize.QueryTypes.SELECT
     });
@@ -47,7 +47,7 @@ exports.create = async (req, res) => {
     const { name, description, price, stock, images, shippingInfo, category } = req.body;
     if (!name || !description || !price || !stock) return res.status(400).json({ error: 'Campos obligatorios faltantes' });
     const result = await db.sequelize.query(
-      'INSERT INTO "Products" ("name", "description", "price", "stock", "images", "shippingInfo", "category", "createdAt", "updatedAt") VALUES (:name, :description, :price, :stock, :images, :shippingInfo, :category, NOW(), NOW()) RETURNING *',
+      'INSERT INTO "Books" ("name", "description", "price", "stock", "images", "shippingInfo", "category", "createdAt", "updatedAt") VALUES (:name, :description, :price, :stock, :images, :shippingInfo, :category, NOW(), NOW()) RETURNING *',
       {
         replacements: { name, description, price, stock, images: JSON.stringify(images), shippingInfo, category },
         type: db.Sequelize.QueryTypes.INSERT
@@ -99,13 +99,13 @@ exports.update = async (req, res) => {
 exports.remove = async (req, res) => {
   try {
     const db = require('../models');
-    const rows = await db.sequelize.query('SELECT * FROM "Products" WHERE "id" = :id', {
+    const rows = await db.sequelize.query('SELECT * FROM "Books" WHERE "id" = :id', {
       replacements: { id: req.params.id },
       type: db.Sequelize.QueryTypes.SELECT
     });
     const producto = rows && rows[0];
     if (!producto) return res.status(404).json({ error: 'Producto no encontrado' });
-    await db.sequelize.query('DELETE FROM "Products" WHERE "id" = :id', {
+    await db.sequelize.query('DELETE FROM "Books" WHERE "id" = :id', {
       replacements: { id: req.params.id },
       type: db.Sequelize.QueryTypes.DELETE
     });

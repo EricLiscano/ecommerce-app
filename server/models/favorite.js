@@ -9,11 +9,11 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id'
       }
     },
-    productId: {
+    bookId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Products',
+        model: 'Books',
         key: 'id'
       }
     }
@@ -24,13 +24,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Favorite.associate = models => {
     Favorite.belongsTo(models.User, { foreignKey: 'userId', targetKey: 'id' });
-    Favorite.belongsTo(models.Product, { foreignKey: 'productId', targetKey: 'id' });
-  };
-
-
-  Favorite.associate = models => {
-    Favorite.belongsTo(models.User, { foreignKey: 'userId' });
-    Favorite.belongsTo(models.Product, { foreignKey: 'productId' });
+    Favorite.belongsTo(models.Book, { foreignKey: 'bookId', targetKey: 'id' });
   };
 
   return Favorite;

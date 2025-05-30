@@ -9,11 +9,14 @@ module.exports = {
         onDelete: 'CASCADE',
         allowNull: false
       },
-      productId: {
+      bookId: {
         type: Sequelize.INTEGER,
-        references: { model: 'Products', key: 'id' },
-        onDelete: 'CASCADE',
-        allowNull: false
+        allowNull: false,
+        references: {
+          model: 'Books',
+          key: 'id'
+        },
+        onDelete: 'CASCADE'
       },
       createdAt: { allowNull: false, type: Sequelize.DATE },
       updatedAt: { allowNull: false, type: Sequelize.DATE }

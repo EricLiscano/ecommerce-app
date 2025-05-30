@@ -1,20 +1,27 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Products', {
+    await queryInterface.createTable('Books', {
       id: { allowNull: false, autoIncrement: true, primaryKey: true, type: Sequelize.INTEGER },
-      name: { type: Sequelize.STRING, allowNull: false },
-      description: { type: Sequelize.TEXT, allowNull: false },
+      title: { type: Sequelize.STRING, allowNull: false },
+      author: { type: Sequelize.STRING, allowNull: false },
+      publisher: { type: Sequelize.STRING },
+      edition: { type: Sequelize.STRING },
+      condition: { type: Sequelize.STRING, allowNull: false },
       price: { type: Sequelize.FLOAT, allowNull: false },
-      stock: { type: Sequelize.INTEGER, allowNull: false },
-      images: { type: Sequelize.JSON },
-      shippingInfo: { type: Sequelize.STRING },
-      category: { type: Sequelize.STRING },
+      isbn: { type: Sequelize.STRING },
+      language: { type: Sequelize.STRING },
+      genre: { type: Sequelize.STRING },
+      year: { type: Sequelize.INTEGER },
+      coverImage: { type: Sequelize.STRING },
+      description: { type: Sequelize.TEXT },
+      userId: { type: Sequelize.INTEGER, allowNull: false, references: { model: 'Users', key: 'id' } },
+      stock: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 1 },
       createdAt: { allowNull: false, type: Sequelize.DATE },
       updatedAt: { allowNull: false, type: Sequelize.DATE }
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Products');
+    await queryInterface.dropTable('Books');
   }
 };

@@ -1,25 +1,31 @@
 <template>
-  <div class="product" v-if="product">
-    <h2>{{ product.name }}</h2>
-    <p>Precio: ${{ product.price }}</p>
-    <p>Stock: {{ product.stock }}</p>
-    <div v-if="product.images && product.images.length">
-      <img :src="product.images[0]" alt="Imagen producto" style="max-width: 100%; margin-bottom: 1rem;" />
-    </div>
-    <p v-if="product.shippingInfo">Envío: {{ product.shippingInfo }}</p>
-    <button @click="handleAddToCart">Agregar al carrito</button>
-    <button @click="addFavorite">Agregar a favoritos</button>
+  <div class="single-product-page">
+    <ProductCard
+      v-if="product"
+      :product="product"
+      :isFavorite="isFavorite"
+      @add-to-cart="handleAddToCart"
+      @toggle-favorite="handleToggleFavorite"
+    />
     <div v-if="error" class="error">{{ error }}</div>
+    <div v-else-if="!product">Cargando producto...</div>
   </div>
-  <div v-else>Cargando producto...</div>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex';
+import ProductCard from '@/components/product/ProductCard.vue';
 export default {
+  components: { ProductCard },
   computed: {
     ...mapState('products', ['current']),
-    product() { return this.current; }
+    ...mapState('favorites', ['items']),
+    product() { return this.current; },
+    isFavorite() {
+      // Si tienes favoritos en store, compara por id
+      if (!this.items || !this.product) return false;
+      return this.items.some(fav => (fav.id || fav.Product?.id) === this.product.id);
+    }
   },
   data() {
     return { error: '' };
@@ -30,8 +36,7 @@ export default {
   methods: {
     ...mapActions('products', ['fetchProduct']),
     ...mapActions('cart', ['addToCart']),
-    ...mapActions('favorites', ['addFavorite']),
-
+    ...mapActions('favorites', ['addFavorite', 'removeFavorite']),
     async handleAddToCart() {
       this.error = '';
       try {
@@ -40,18 +45,22 @@ export default {
         this.error = e?.response?.data?.error || 'Error al agregar al carrito';
       }
     },
-
-    async addFavorite() {
+    async handleToggleFavorite() {
       this.error = '';
       try {
-        await this.addFavorite(this.product.id);
+        if (this.isFavorite) {
+          await this.removeFavorite(this.product.id);
+        } else {
+          await this.addFavorite(this.product.id);
+        }
       } catch (e) {
-        this.error = e?.response?.data?.error || 'Error al agregar a favoritos';
+        this.error = e?.response?.data?.error || 'Error al actualizar favoritos';
       }
     }
   }
 };
 </script>
+
 
 <style scoped>
 .product {

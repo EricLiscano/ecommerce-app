@@ -12,10 +12,10 @@ exports.getFavorites = async (req, res) => {
     }
     const userId = req.user.id;
     const [results] = await db.sequelize.query(`
-      SELECT f."id" as favoriteId, f."userId", f."productId",
-             p."id" as productId, p."name", p."description", p."price", p."stock", p."images", p."shippingInfo", p."category"
+      SELECT f."id" as favoriteId, f."userId", f."bookId",
+             b."id" as bookId, b."title", b."author", b."description", b."price", b."stock", b."coverImage", b."genre", b."year"
       FROM "Favorites" f
-      LEFT JOIN "Products" p ON f."productId" = p."id"
+      LEFT JOIN "Books" b ON f."bookId" = b."id"
       WHERE f."userId" = :userId
     `, {
       replacements: { userId },
@@ -35,18 +35,18 @@ exports.getFavorites = async (req, res) => {
 exports.addFavorite = async (req, res) => {
   try {
     const db = require('../models');
-    const { productId } = req.body;
+    const { bookId } = req.body;
     const userId = req.user && req.user.id;
     if (!productId) return res.status(400).json({ error: 'Falta productId' });
     // Verificar si ya existe
-    const [exists] = await db.sequelize.query('SELECT "id" FROM "Favorites" WHERE "userId" = :userId AND "productId" = :productId', {
-      replacements: { userId, productId },
+    const [exists] = await db.sequelize.query('SELECT "id" FROM "Favorites" WHERE "userId" = :userId AND "bookId" = :bookId', {
+      replacements: { userId, bookId },
       type: db.Sequelize.QueryTypes.SELECT
     });
     if (exists && exists.id) return res.status(409).json({ error: 'Ya es favorito' });
     // Insertar favorito
-    const [result] = await db.sequelize.query('INSERT INTO "Favorites" ("userId", "productId", "createdAt", "updatedAt") VALUES (:userId, :productId, NOW(), NOW()) RETURNING *', {
-      replacements: { userId, productId },
+    const [result] = await db.sequelize.query('INSERT INTO "Favorites" ("userId", "bookId", "createdAt", "updatedAt") VALUES (:userId, :bookId, NOW(), NOW()) RETURNING *', {
+      replacements: { userId, bookId },
       type: db.Sequelize.QueryTypes.INSERT
     });
     res.status(201).json(result && result[0] ? result[0] : result);
@@ -62,11 +62,11 @@ exports.addFavorite = async (req, res) => {
 exports.removeFavorite = async (req, res) => {
   try {
     const db = require('../models');
-    const { productId } = req.body;
+    const { bookId } = req.body;
     const userId = req.user && req.user.id;
     // Verificar si existe
-    const [fav] = await db.sequelize.query('SELECT "id" FROM "Favorites" WHERE "userId" = :userId AND "productId" = :productId', {
-      replacements: { userId, productId },
+    const [fav] = await db.sequelize.query('SELECT "id" FROM "Favorites" WHERE "userId" = :userId AND "bookId" = :bookId', {
+      replacements: { userId, bookId },
       type: db.Sequelize.QueryTypes.SELECT
     });
     if (!fav || !fav.id) return res.status(404).json({ error: 'No es favorito' });

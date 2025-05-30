@@ -12,7 +12,8 @@
     "kill5000": "lsof -ti:5000 | xargs kill -9 || true"
   },
   "devDependencies": {
-    "concurrently": "^8.2.0"
+    "concurrently": "^8.2.0",
+    "nodemon": "^3.1.10"
   },
   "dependencies": {
     "https-browserify": "^1.0.0",

@@ -16,9 +16,9 @@ exports.getCart = async (req, res) => {
     if (!carts || !carts.id) return res.json({ items: [], total: 0 });
     // Buscar items del carrito con productos
     const [items] = await db.sequelize.query(`
-      SELECT ci."productId", ci."quantity", p."name", p."price", p."images", p."stock"
+      SELECT ci."bookId", ci."quantity", b."title", b."author", b."price", b."coverImage", b."stock"
       FROM "CartItems" ci
-      JOIN "Products" p ON ci."productId" = p."id"
+      JOIN "Books" b ON ci."bookId" = b."id"
       WHERE ci."cartId" = :cartId
     `, {
       replacements: { cartId: carts.id },
