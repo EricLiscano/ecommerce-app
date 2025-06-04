@@ -24,14 +24,17 @@ exports.getCart = async (req, res) => {
       replacements: { cartId: carts.id },
       type: db.Sequelize.QueryTypes.SELECT
     });
-    const cartItems = (Array.isArray(items) ? items : [items]).filter(Boolean).map(item => ({
-      id: item.productId,
-      name: item.name,
-      price: item.price,
-      quantity: item.quantity,
-      image: (() => { try { const imgs = typeof item.images === 'string' ? JSON.parse(item.images) : item.images; return Array.isArray(imgs) ? imgs[0] : ''; } catch { return ''; } })(),
-      stock: item.stock
-    }));
+    const cartItems = (Array.isArray(items) ? items : [items])
+      .filter(Boolean)
+      .map(item => ({
+        id: item.bookId,
+        title: item.title,
+        author: item.author,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.coverImage || '',
+        stock: item.stock
+      }));
     const total = cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
     res.json({ items: cartItems, total });
   } catch (err) {
@@ -67,7 +70,7 @@ exports.addToCart = async (req, res) => {
     // Verificar producto y stock
     const [books] = await db.sequelize.query(
       'SELECT "id", "stock" FROM "Books" WHERE "id" = :bookId',
-      { replacements: { bookId: productId }, type: db.Sequelize.QueryTypes.SELECT }
+      { replacements: { bookId }, type: db.Sequelize.QueryTypes.SELECT }
     );
     if (!books || !books.id) return res.status(404).json({ error: 'Libro no encontrado' });
     if (quantity > books.stock) return res.status(400).json({ error: 'No hay suficiente stock' });
@@ -150,8 +153,8 @@ exports.updateCartItem = async (req, res) => {
       type: db.Sequelize.QueryTypes.SELECT
     });
     const book = books && books[0];
-    if (!product) return res.status(404).json({ error: 'Producto no encontrado' });
-    if (quantity > product.stock) return res.status(400).json({ error: 'No hay suficiente stock' });
+    if (!book) return res.status(404).json({ error: 'Producto no encontrado' });
+    if (quantity > book.stock) return res.status(400).json({ error: 'No hay suficiente stock' });
     // Buscar item
     const [items] = await db.sequelize.query('SELECT * FROM "CartItems" WHERE "cartId" = :cartId AND "bookId" = :bookId', {
       replacements: { cartId, bookId },

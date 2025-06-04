@@ -22,7 +22,7 @@ exports.getFavorites = async (req, res) => {
       type: db.Sequelize.QueryTypes.SELECT
     });
     if (!results || results.length === 0) return res.json([]);
-    res.json(Array.isArray(results) ? results.filter(r => r.productId) : [results]);
+    res.json(Array.isArray(results) ? results.filter(r => r.bookId) : [results]);
   } catch (err) {
     const error = isDevelopment ? err : 'Error al obtener favoritos';
     res.status(500).json({ error });
@@ -37,7 +37,7 @@ exports.addFavorite = async (req, res) => {
     const db = require('../models');
     const { bookId } = req.body;
     const userId = req.user && req.user.id;
-    if (!productId) return res.status(400).json({ error: 'Falta productId' });
+    if (!bookId) return res.status(400).json({ error: 'Falta bookId' });
     // Verificar si ya existe
     const [exists] = await db.sequelize.query('SELECT "id" FROM "Favorites" WHERE "userId" = :userId AND "bookId" = :bookId', {
       replacements: { userId, bookId },
