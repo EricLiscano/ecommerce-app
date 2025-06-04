@@ -12,18 +12,18 @@ export default {
   actions: {
     async fetchCart({ commit }) {
       const { data } = await api.get('/cart');
-      commit('setCart', data.CartItems || []);
+      commit('setCart', data.items || []);
     },
-    async addToCart({ dispatch }, { productId, quantity }) {
-      await api.post('/cart/add', { productId, quantity });
+    async addToCart({ dispatch }, { bookId, quantity }) {
+      await api.post('/cart/add', { bookId, quantity });
       await dispatch('fetchCart');
     },
-    async removeFromCart({ dispatch }, productId) {
-      await api.post('/cart/remove', { productId });
+    async removeFromCart({ dispatch }, bookId) {
+      await api.post('/cart/remove', { bookId });
       await dispatch('fetchCart');
     },
-    async updateCartItem({ dispatch }, { productId, quantity }) {
-      await api.post('/cart/update', { productId, quantity });
+    async updateCartItem({ dispatch }, { bookId, quantity }) {
+      await api.post('/cart/update', { bookId, quantity });
       await dispatch('fetchCart');
     },
     async clearCart({ commit }) {

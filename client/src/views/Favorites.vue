@@ -2,7 +2,7 @@
   <div class="favorites">
     <h2>Favoritos</h2>
     <ul>
-      <li v-for="fav in favorites" :key="fav.id">{{ fav.name }}</li>
+      <li v-for="fav in favorites" :key="fav.bookId">{{ fav.title }}</li>
     </ul>
     <p v-if="favorites.length === 0">No tienes productos favoritos.</p>
   </div>

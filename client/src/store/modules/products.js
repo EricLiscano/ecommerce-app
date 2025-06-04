@@ -8,14 +8,36 @@ export default {
   },
   mutations: {
     setProducts(state, products) {
-  state.products = products.map(p => ({
-    ...p,
-    images: Array.isArray(p.images)
-      ? p.images
-      : (typeof p.images === 'string' && p.images.trim() ? JSON.parse(p.images) : [])
-  }));
-},
-    setCurrent(state, product) { state.current = product; }
+      state.products = products.map(p => {
+        const cover = p.coverImage;
+        let images = [];
+        if (Array.isArray(cover)) {
+          images = cover;
+        } else if (typeof cover === 'string' && cover.trim()) {
+          try {
+            const parsed = JSON.parse(cover);
+            images = Array.isArray(parsed) ? parsed : [cover];
+          } catch {
+            images = [cover];
+          }
+        }
+        return { ...p, images };
+      });
+    },
+    setCurrent(state, product) {
+      let images = [];
+      if (Array.isArray(product.coverImage)) {
+        images = product.coverImage;
+      } else if (typeof product.coverImage === 'string' && product.coverImage.trim()) {
+        try {
+          const parsed = JSON.parse(product.coverImage);
+          images = Array.isArray(parsed) ? parsed : [product.coverImage];
+        } catch {
+          images = [product.coverImage];
+        }
+      }
+      state.current = { ...product, images };
+    }
   },
   actions: {
     async fetchProducts({ commit }) {

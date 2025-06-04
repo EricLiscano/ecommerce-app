@@ -26,7 +26,7 @@ export default {
      * @returns boolean
      */
     IsProductFavorite(product) {
-      return Boolean(this.favorites.some(fav => fav.productId === product.id));
+      return Boolean(this.favorites.some(fav => fav.bookId === product.id));
     }
   }
 };

@@ -23,10 +23,10 @@ export default {
     ...mapActions('cart', ['addToCart']),
     ...mapActions('favorites', ['addFavorite', 'removeFavorite', 'fetchFavorites']),
     handleAddToCart(product) {
-      this.addToCart({ productId: product.id, quantity: 1 });
+      this.addToCart({ bookId: product.id, quantity: 1 });
     },
     handleToggleFavorite(product) {
-      if (this.favorites.some(fav => fav.id === product.id)) {
+      if (this.favorites.some(fav => fav.bookId === product.id)) {
         this.removeFavorite(product.id);
       } else {
         this.addFavorite(product.id);

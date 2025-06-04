@@ -6,7 +6,7 @@ export default {
     items: []
   },
   mutations: {
-    setFavorites(state, items) { state.items = items.map(f => f.Product); },
+    setFavorites(state, items) { state.items = items; },
     clear(state) { state.items = []; }
   },
   actions: {
@@ -14,12 +14,12 @@ export default {
       const { data } = await api.get('/favorites');
       commit('setFavorites', data);
     },
-    async addFavorite({ dispatch }, productId) {
-      await api.post('/favorites/add', { productId });
+    async addFavorite({ dispatch }, bookId) {
+      await api.post('/favorites/add', { bookId });
       await dispatch('fetchFavorites');
     },
-    async removeFavorite({ dispatch }, productId) {
-      await api.post('/favorites/remove', { productId });
+    async removeFavorite({ dispatch }, bookId) {
+      await api.post('/favorites/remove', { bookId });
       await dispatch('fetchFavorites');
     }
   }
