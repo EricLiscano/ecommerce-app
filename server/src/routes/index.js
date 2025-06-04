@@ -10,5 +10,6 @@ router.use('/favorites', require('./favorites'));
 router.use('/user', require('./user'));
 router.use('/admin', require('./admin'));
 router.use('/checkout', require('./checkout'));
+router.use('/orders', require('./orders'));
 
 module.exports = router;
