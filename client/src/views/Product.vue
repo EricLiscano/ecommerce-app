@@ -24,7 +24,7 @@ export default {
     isFavorite() {
       // Si tienes favoritos en store, compara por id
       if (!this.items || !this.product) return false;
-      return this.items.some(fav => (fav.id || fav.Product?.id) === this.product.id);
+      return this.items.some(fav => fav.bookId === this.product.id);
     }
   },
   data() {
@@ -40,7 +40,7 @@ export default {
     async handleAddToCart() {
       this.error = '';
       try {
-        await this.addToCart({ productId: this.product.id, quantity: 1 });
+        await this.addToCart({ bookId: this.product.id, quantity: 1 });
       } catch (e) {
         this.error = e?.response?.data?.error || 'Error al agregar al carrito';
       }
@@ -50,9 +50,9 @@ export default {
       try {
         if (this.isFavorite) {
           await this.removeFavorite(this.product.id);
-        } else {
+      } else {
           await this.addFavorite(this.product.id);
-        }
+      }
       } catch (e) {
         this.error = e?.response?.data?.error || 'Error al actualizar favoritos';
       }

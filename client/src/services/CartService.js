@@ -20,15 +20,15 @@ export default {
     this.saveCart(cart);
     return cart;
   },
-  removeItem(productId) {
+  removeItem(bookId) {
     let cart = this.getCart();
-    cart = cart.filter(i => i.product.id !== productId);
+    cart = cart.filter(i => i.product.id !== bookId);
     this.saveCart(cart);
     return cart;
   },
-  updateQuantity(productId, quantity) {
+  updateQuantity(bookId, quantity) {
     const cart = this.getCart();
-    const idx = cart.findIndex(i => i.product.id === productId);
+    const idx = cart.findIndex(i => i.product.id === bookId);
     if (idx > -1) {
       cart[idx].quantity = quantity;
       if (cart[idx].quantity <= 0) cart.splice(idx, 1);
